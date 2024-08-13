@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Org.BouncyCastle.Utilities.IO;
 using Org.BouncyCastle.Pqc.Crypto.Lms;
+using System.Security.Cryptography.X509Certificates;
 
 namespace EncriptarArchivo
 {
@@ -259,37 +260,45 @@ namespace EncriptarArchivo
             string outputFilePath;
             string publicKeyPath = "";
             string fileName = "";
+            try
+            {
+                openFileDialog1.Filter = "Archivos de texto (*.txt)|*.txt|Todos los archivos(*.*)|*.*";
+                openFileDialog1.Title = "Selecione un archivo para encriptar";
 
-            openFileDialog1.Filter = "Archivos de texto (*.txt)|*.txt|Todos los archivos(*.*)|*.*";
-            openFileDialog1.Title = "Selecione un archivo para encriptar";
-            
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                inputFilePath = openFileDialog1.FileName;
-                fileName = openFileDialog1.SafeFileName;
-                inputfile = true;
-            }
-            if (inputfile)
-            {
-                openFileDialog1.FileName = "";
-                openFileDialog1.Filter = "Llave Publica (*.asc)|*.asc|Todos los archivos(*.*)|*.*";
-                openFileDialog1.Title = "Selecione la llave publica con la que quiere encriptar el archivo";
                 if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 {
-                    publicKeyPath = openFileDialog1.FileName;
-                    publicKey = true;
+                    inputFilePath = openFileDialog1.FileName;
+                    fileName = openFileDialog1.SafeFileName;
+                    inputfile = true;
                 }
-                //inputFilePath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\PGPs_para_API_DHL\\24052024M\\DHL_24052024_222222.txt";
-                //outputFilePath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\PGPs_para_API_DHL\\24052024M\\DHL_24052024_222222.pgp";
-                outputFilePath = inputFilePath + ".pgp";
-                //string publicKeyPath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\GUIAS_DHL_PUBLIC.asc"; //llave publica
-                if (publicKey)
+                if (inputfile)
                 {
-                    PgpEncrypt.EncryptFile(inputFilePath, outputFilePath, publicKeyPath);
+                    openFileDialog1.FileName = "";
+                    openFileDialog1.Filter = "Llave Publica (*.asc)|*.asc|Todos los archivos(*.*)|*.*";
+                    openFileDialog1.Title = "Selecione la llave publica con la que quiere encriptar el archivo";
+                    if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                    {
+                        publicKeyPath = openFileDialog1.FileName;
+                        publicKey = true;
+                    }
+                    //inputFilePath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\PGPs_para_API_DHL\\24052024M\\DHL_24052024_222222.txt";
+                    //outputFilePath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\PGPs_para_API_DHL\\24052024M\\DHL_24052024_222222.pgp";
+                    outputFilePath = inputFilePath + ".pgp";
+                    //string publicKeyPath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\GUIAS_DHL_PUBLIC.asc"; //llave publica
+                    if (publicKey)
+                    {
+                        PgpEncrypt.EncryptFile(inputFilePath, outputFilePath, publicKeyPath);
 
-                    MessageBox.Show("Se encripto el archivo: " + fileName + "\nCon la llave publica: " + openFileDialog1.SafeFileName);
+                        MessageBox.Show("Se encripto el archivo: " + fileName + "\nCon la llave publica: " + openFileDialog1.SafeFileName);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -307,23 +316,61 @@ namespace EncriptarArchivo
         private void button3_Click(object sender, EventArgs e)
         {
             string publicKeyPath = "C:\\Test\\pgp\\llave_ECDSA_public.asc";
-            DateTime? expirationDate = PgpKeyInfo.GetKeyExpiration(publicKeyPath);
+            bool publicKey = false;
+            try
+            {
+                openFileDialog1.FileName = "";
+                openFileDialog1.Filter = "Llave Publica (*.asc)|*.asc|Todos los archivos(*.*)|*.*";
+                openFileDialog1.Title = "Selecione la llave publica de la que quiere saber la fecha de expiracion";
+                if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    publicKeyPath = openFileDialog1.FileName;
+                    publicKey = true;
+                }
+                if (publicKey)
+                {
+                    DateTime? expirationDate = PgpKeyInfo.GetKeyExpiration(publicKeyPath);
 
-            if (expirationDate.HasValue)
-            {
-                MessageBox.Show("The key expires on: " + expirationDate.Value);
+                    if (expirationDate.HasValue)
+                    {
+                        MessageBox.Show("La Llave " + openFileDialog1.SafeFileName + " expira el: " + expirationDate.Value.ToString("dd/MM/yyyy"));
+                    }
+                    else
+                    {
+                        MessageBox.Show("La Llave no expira");
+                    }
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("The key does not expire.");
+                MessageBox.Show(ex.Message);
             }
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            string publicKeyPath = "C:\\Test\\pgp\\llave_ECDSA_public.asc";
-            long KeyId = PgpKeyInfo.GetKeyId(publicKeyPath);
-            MessageBox.Show("Key ID: " + KeyId.ToString("X"));
+            string publicKeyPath = "";
+            bool publicKey = false;
+            try
+            {
+                openFileDialog1.FileName = "";
+                openFileDialog1.Filter = "Llave Publica (*.asc)|*.asc|Todos los archivos(*.*)|*.*";
+                openFileDialog1.Title = "Selecione la llave publica de la que quiere saber el Key ID";
+                if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    publicKeyPath = openFileDialog1.FileName;
+                    publicKey = true;
+                }
+                if (publicKey)
+                {
+                    long KeyId = PgpKeyInfo.GetKeyId(publicKeyPath);
+                    MessageBox.Show("Key ID: " + KeyId.ToString("X"));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }
