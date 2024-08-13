@@ -1,0 +1,329 @@
+﻿using Org.BouncyCastle.Bcpg.OpenPgp;
+using Org.BouncyCastle.Bcpg;
+using Org.BouncyCastle.Security;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Org.BouncyCastle.Utilities.IO;
+using Org.BouncyCastle.Pqc.Crypto.Lms;
+
+namespace EncriptarArchivo
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+        //Se probo para llave ECDSA/EdDSA y RSA
+        public class PgpEncrypt
+        {
+            public static void EncryptFile(string inputFilePath, string outputFilePath, string publicKeyPath)
+            {
+                using (Stream publicKeyStream = File.OpenRead(publicKeyPath))
+                using (Stream outputFileStream = File.Create(outputFilePath))
+                {
+                    EncryptFile(outputFileStream, inputFilePath, publicKeyStream, true, true);
+                }
+            }
+
+            private static void EncryptFile(
+                Stream outputStream,
+                string fileName,
+                Stream publicKeyStream,
+                bool armor,
+                bool withIntegrityCheck)
+            {
+                PgpPublicKey pubKey = ReadPublicKey(publicKeyStream);
+
+                using (MemoryStream bOut = new MemoryStream())
+                {
+                    PgpCompressedDataGenerator comData = new PgpCompressedDataGenerator(CompressionAlgorithmTag.Zip);
+
+                    PgpUtilities.WriteFileToLiteralData(
+                        comData.Open(bOut),
+                        PgpLiteralData.Binary,
+                        new FileInfo(fileName));
+
+                    comData.Close();
+
+                    PgpEncryptedDataGenerator cPk = new PgpEncryptedDataGenerator(
+                        SymmetricKeyAlgorithmTag.Cast5,
+                        withIntegrityCheck,
+                        new SecureRandom());
+
+                    cPk.AddMethod(pubKey);
+
+                    byte[] bytes = bOut.ToArray();
+
+                    if (armor)
+                    {
+                        using (ArmoredOutputStream armoredStream = new ArmoredOutputStream(outputStream))
+                        {
+                            using (Stream cOut = cPk.Open(armoredStream, bytes.Length))
+                            {
+                                cOut.Write(bytes, 0, bytes.Length);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        using (Stream cOut = cPk.Open(outputStream, bytes.Length))
+                        {
+                            cOut.Write(bytes, 0, bytes.Length);
+                        }
+                    }
+                }
+            }
+
+            private static PgpPublicKey ReadPublicKey(Stream inputStream)
+            {
+                using (Stream input = PgpUtilities.GetDecoderStream(inputStream))
+                {
+                    PgpPublicKeyRingBundle pgpPub = new PgpPublicKeyRingBundle(input);
+                    foreach (PgpPublicKeyRing kRing in pgpPub.GetKeyRings())
+                    {
+                        foreach (PgpPublicKey k in kRing.GetPublicKeys())
+                        {
+                            if (k.IsEncryptionKey)
+                            {
+                                return k;
+                            }
+                        }
+                    }
+                }
+                throw new ArgumentException("No encryption key found in public key.");
+            }
+        }
+
+        //Se probo para llave RSA y ECDSA/EdDSA
+        public class PgpDecrypt
+        {
+            public static void DecryptFile(string inputFilePath, string outputFilePath, string privateKeyPath, string passphrase)
+            {
+                using (Stream inputStream = File.OpenRead(inputFilePath))
+                using (Stream keyIn = File.OpenRead(privateKeyPath))
+                using (Stream outputStream = File.Create(outputFilePath))
+                {
+                    DecryptFile(inputStream, outputStream, keyIn, passphrase.ToCharArray());
+                }
+            }
+
+            private static void DecryptFile(
+                Stream inputStream,
+                Stream outputStream,
+                Stream privateKeyStream,
+                char[] passPhrase)
+            {
+                inputStream = PgpUtilities.GetDecoderStream(inputStream);
+
+                PgpObjectFactory pgpF = new PgpObjectFactory(inputStream);
+                PgpEncryptedDataList enc;
+
+                PgpObject o = pgpF.NextPgpObject();
+                if (o is PgpEncryptedDataList)
+                {
+                    enc = (PgpEncryptedDataList)o;
+                }
+                else
+                {
+                    enc = (PgpEncryptedDataList)pgpF.NextPgpObject();
+                }
+
+                PgpPrivateKey sKey = null;
+                PgpPublicKeyEncryptedData pbe = null;
+                PgpSecretKeyRingBundle pgpSec = new PgpSecretKeyRingBundle(PgpUtilities.GetDecoderStream(privateKeyStream));
+
+                foreach (PgpPublicKeyEncryptedData pked in enc.GetEncryptedDataObjects())
+                {
+                    sKey = FindSecretKey(pgpSec, pked.KeyId, passPhrase);
+
+                    if (sKey != null)
+                    {
+                        pbe = pked;
+                        break;
+                    }
+                }
+
+                if (sKey == null)
+                {
+                    throw new ArgumentException("Secret key for message not found.");
+                }
+
+                Stream clear = pbe.GetDataStream(sKey);
+                PgpObjectFactory plainFact = new PgpObjectFactory(clear);
+
+                PgpObject message = plainFact.NextPgpObject();
+
+                if (message is PgpCompressedData cData)
+                {
+                    PgpObjectFactory pgpFact = new PgpObjectFactory(cData.GetDataStream());
+
+                    message = pgpFact.NextPgpObject();
+                }
+
+                if (message is PgpLiteralData ld)
+                {
+                    Stream unc = ld.GetInputStream();
+                    Streams.PipeAll(unc, outputStream);
+                }
+                else if (message is PgpOnePassSignatureList)
+                {
+                    throw new PgpException("Encrypted message contains a signed message - not literal data.");
+                }
+                else
+                {
+                    throw new PgpException("Message is not a simple encrypted file - type unknown.");
+                }
+
+                if (pbe.IsIntegrityProtected() && !pbe.Verify())
+                {
+                    throw new PgpException("Message failed integrity check.");
+                }
+            }
+
+            private static PgpPrivateKey FindSecretKey(PgpSecretKeyRingBundle pgpSec, long keyId, char[] pass)
+            {
+                PgpSecretKey pgpSecKey = pgpSec.GetSecretKey(keyId);
+
+                if (pgpSecKey == null)
+                {
+                    return null;
+                }
+
+                return pgpSecKey.ExtractPrivateKey(pass);
+            }
+        }
+
+        public class PgpKeyInfo
+        {
+            public static DateTime? GetKeyExpiration(string publicKeyPath)
+            {
+                using (Stream publicKeyStream = File.OpenRead(publicKeyPath))
+                {
+                    PgpPublicKeyRingBundle pgpPub = new PgpPublicKeyRingBundle(PgpUtilities.GetDecoderStream(publicKeyStream));
+
+                    foreach (PgpPublicKeyRing keyRing in pgpPub.GetKeyRings())
+                    {
+                        foreach (PgpPublicKey key in keyRing.GetPublicKeys())
+                        {
+                            DateTime creationTime = key.CreationTime;
+                            long validityPeriod = key.GetValidSeconds(); // Validity period in seconds
+
+                            if (validityPeriod == 0)
+                            {
+                                // The key does not expire
+                                return null;
+                            }
+                            else
+                            {
+                                // Calculate the expiration time
+                                DateTime expirationTime = creationTime.AddSeconds(validityPeriod);
+                                return expirationTime;
+                            }
+                        }
+                    }
+                }
+                throw new ArgumentException("No valid keys found in the public key file.");
+            }
+            public static long GetKeyId(string publicKeyPath)
+            {
+                using (Stream publicKeyStream = File.OpenRead(publicKeyPath))
+                {
+                    PgpPublicKeyRingBundle pgpPub = new PgpPublicKeyRingBundle(PgpUtilities.GetDecoderStream(publicKeyStream));
+
+                    foreach (PgpPublicKeyRing keyRing in pgpPub.GetKeyRings())
+                    {
+                        foreach (PgpPublicKey key in keyRing.GetPublicKeys())
+                        {
+                            long keyId = key.KeyId;
+                            return (keyId);
+                        }
+                    }
+                }
+                throw new ArgumentException("No valid keys found in the public key file.");
+            }
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            bool inputfile = false;
+            bool publicKey = false;
+            string inputFilePath = "";
+            string outputFilePath;
+            string publicKeyPath = "";
+            string fileName = "";
+
+            openFileDialog1.Filter = "Archivos de texto (*.txt)|*.txt|Todos los archivos(*.*)|*.*";
+            openFileDialog1.Title = "Selecione un archivo para encriptar";
+            
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                inputFilePath = openFileDialog1.FileName;
+                fileName = openFileDialog1.SafeFileName;
+                inputfile = true;
+            }
+            if (inputfile)
+            {
+                openFileDialog1.FileName = "";
+                openFileDialog1.Filter = "Llave Publica (*.asc)|*.asc|Todos los archivos(*.*)|*.*";
+                openFileDialog1.Title = "Selecione la llave publica con la que quiere encriptar el archivo";
+                if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    publicKeyPath = openFileDialog1.FileName;
+                    publicKey = true;
+                }
+                //inputFilePath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\PGPs_para_API_DHL\\24052024M\\DHL_24052024_222222.txt";
+                //outputFilePath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\PGPs_para_API_DHL\\24052024M\\DHL_24052024_222222.pgp";
+                outputFilePath = inputFilePath + ".pgp";
+                //string publicKeyPath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\GUIAS_DHL_PUBLIC.asc"; //llave publica
+                if (publicKey)
+                {
+                    PgpEncrypt.EncryptFile(inputFilePath, outputFilePath, publicKeyPath);
+
+                    MessageBox.Show("Se encripto el archivo: " + fileName + "\nCon la llave publica: " + openFileDialog1.SafeFileName);
+                }
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            string inputFilePath = "C:\\Test\\pgp\\encrypted_output.pgp";
+            string outputFilePath = "C:\\Test\\pgp\\carrier.txt";
+            string privateKeyPath = "C:\\Test\\pgp\\llave_ECDSA_SECRET.asc";
+            string passphrase = "";
+
+            PgpDecrypt.DecryptFile(inputFilePath, outputFilePath, privateKeyPath, passphrase);
+
+            MessageBox.Show("Se desencripto el archivo");
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            string publicKeyPath = "C:\\Test\\pgp\\llave_ECDSA_public.asc";
+            DateTime? expirationDate = PgpKeyInfo.GetKeyExpiration(publicKeyPath);
+
+            if (expirationDate.HasValue)
+            {
+                MessageBox.Show("The key expires on: " + expirationDate.Value);
+            }
+            else
+            {
+                MessageBox.Show("The key does not expire.");
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            string publicKeyPath = "C:\\Test\\pgp\\llave_ECDSA_public.asc";
+            long KeyId = PgpKeyInfo.GetKeyId(publicKeyPath);
+            MessageBox.Show("Key ID: " + KeyId.ToString("X"));
+        }
+    }
+}

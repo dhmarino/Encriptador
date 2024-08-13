@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34622.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EncriptarArchivo", "EncriptarArchivo\EncriptarArchivo.csproj", "{D39738D5-916F-4163-8645-5164A7E474BC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D39738D5-916F-4163-8645-5164A7E474BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D39738D5-916F-4163-8645-5164A7E474BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D39738D5-916F-4163-8645-5164A7E474BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D39738D5-916F-4163-8645-5164A7E474BC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2F0B94FD-5342-44AC-9163-96EAFFDAB61D}
+	EndGlobalSection
+EndGlobal
