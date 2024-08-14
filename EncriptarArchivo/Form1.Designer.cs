@@ -29,69 +29,68 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
+            this.BtnEncriptar = new System.Windows.Forms.Button();
+            this.BtnDesencriptar = new System.Windows.Forms.Button();
+            this.BtnVerificarVencimiento = new System.Windows.Forms.Button();
+            this.BtnKeyId = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.SuspendLayout();
             // 
-            // button1
+            // BtnEncriptar
             // 
-            this.button1.Location = new System.Drawing.Point(120, 41);
-            this.button1.Margin = new System.Windows.Forms.Padding(2);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(146, 47);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Encriptar";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.BtnEncriptar.Location = new System.Drawing.Point(240, 79);
+            this.BtnEncriptar.Margin = new System.Windows.Forms.Padding(4);
+            this.BtnEncriptar.Name = "BtnEncriptar";
+            this.BtnEncriptar.Size = new System.Drawing.Size(292, 90);
+            this.BtnEncriptar.TabIndex = 0;
+            this.BtnEncriptar.Text = "Encriptar";
+            this.BtnEncriptar.UseVisualStyleBackColor = true;
+            this.BtnEncriptar.Click += new System.EventHandler(this.BtnEncriptar_Click);
             // 
-            // button2
+            // BtnDesencriptar
             // 
-            this.button2.Location = new System.Drawing.Point(120, 121);
-            this.button2.Margin = new System.Windows.Forms.Padding(2);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(146, 47);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "Desencriptar";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.BtnDesencriptar.Location = new System.Drawing.Point(240, 233);
+            this.BtnDesencriptar.Margin = new System.Windows.Forms.Padding(4);
+            this.BtnDesencriptar.Name = "BtnDesencriptar";
+            this.BtnDesencriptar.Size = new System.Drawing.Size(292, 90);
+            this.BtnDesencriptar.TabIndex = 1;
+            this.BtnDesencriptar.Text = "Desencriptar";
+            this.BtnDesencriptar.UseVisualStyleBackColor = true;
+            this.BtnDesencriptar.Click += new System.EventHandler(this.Desencriptar_Click);
             // 
-            // button3
+            // BtnVerificarVencimiento
             // 
-            this.button3.Location = new System.Drawing.Point(120, 200);
-            this.button3.Margin = new System.Windows.Forms.Padding(2);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(146, 47);
-            this.button3.TabIndex = 2;
-            this.button3.Text = "Verificar Vencimiento";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.BtnVerificarVencimiento.Location = new System.Drawing.Point(240, 385);
+            this.BtnVerificarVencimiento.Margin = new System.Windows.Forms.Padding(4);
+            this.BtnVerificarVencimiento.Name = "BtnVerificarVencimiento";
+            this.BtnVerificarVencimiento.Size = new System.Drawing.Size(292, 90);
+            this.BtnVerificarVencimiento.TabIndex = 2;
+            this.BtnVerificarVencimiento.Text = "Verificar Vencimiento";
+            this.BtnVerificarVencimiento.UseVisualStyleBackColor = true;
+            this.BtnVerificarVencimiento.Click += new System.EventHandler(this.BtnVerificarVencimiento_Click);
             // 
-            // button4
+            // BtnKeyId
             // 
-            this.button4.Location = new System.Drawing.Point(120, 281);
-            this.button4.Margin = new System.Windows.Forms.Padding(2);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(146, 47);
-            this.button4.TabIndex = 3;
-            this.button4.Text = "KeyId";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.BtnKeyId.Location = new System.Drawing.Point(240, 540);
+            this.BtnKeyId.Margin = new System.Windows.Forms.Padding(4);
+            this.BtnKeyId.Name = "BtnKeyId";
+            this.BtnKeyId.Size = new System.Drawing.Size(292, 90);
+            this.BtnKeyId.TabIndex = 3;
+            this.BtnKeyId.Text = "KeyId";
+            this.BtnKeyId.UseVisualStyleBackColor = true;
+            this.BtnKeyId.Click += new System.EventHandler(this.BtnKeyId_Click);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(400, 374);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.ClientSize = new System.Drawing.Size(800, 719);
+            this.Controls.Add(this.BtnKeyId);
+            this.Controls.Add(this.BtnVerificarVencimiento);
+            this.Controls.Add(this.BtnDesencriptar);
+            this.Controls.Add(this.BtnEncriptar);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "PGP Soluciones";
             this.ResumeLayout(false);
@@ -100,12 +99,11 @@
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button BtnEncriptar;
+        private System.Windows.Forms.Button BtnDesencriptar;
+        private System.Windows.Forms.Button BtnVerificarVencimiento;
+        private System.Windows.Forms.Button BtnKeyId;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
     }
 }
 
