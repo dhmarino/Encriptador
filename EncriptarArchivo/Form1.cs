@@ -14,6 +14,8 @@ using System.Windows.Forms;
 using Org.BouncyCastle.Utilities.IO;
 using Org.BouncyCastle.Pqc.Crypto.Lms;
 using System.Security.Cryptography.X509Certificates;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace EncriptarArchivo
 {
@@ -22,6 +24,9 @@ namespace EncriptarArchivo
         public Form1()
         {
             InitializeComponent();
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            labelVersion.Text = $"Versión:{ fvi.FileVersion}";
         }
         //Se probo para llave ECDSA/EdDSA y RSA
         public class PgpEncrypt

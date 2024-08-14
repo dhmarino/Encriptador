@@ -34,6 +34,7 @@
             this.BtnVerificarVencimiento = new System.Windows.Forms.Button();
             this.BtnKeyId = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.labelVersion = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // BtnEncriptar
@@ -80,11 +81,22 @@
             this.BtnKeyId.UseVisualStyleBackColor = true;
             this.BtnKeyId.Click += new System.EventHandler(this.BtnKeyId_Click);
             // 
+            // labelVersion
+            // 
+            this.labelVersion.AutoSize = true;
+            this.labelVersion.Font = new System.Drawing.Font("Modern No. 20", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelVersion.Location = new System.Drawing.Point(591, 670);
+            this.labelVersion.Name = "labelVersion";
+            this.labelVersion.Size = new System.Drawing.Size(178, 29);
+            this.labelVersion.TabIndex = 4;
+            this.labelVersion.Text = "Versión: 1.0.0.0";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 719);
+            this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.BtnKeyId);
             this.Controls.Add(this.BtnVerificarVencimiento);
             this.Controls.Add(this.BtnDesencriptar);
@@ -94,6 +106,7 @@
             this.Name = "Form1";
             this.Text = "PGP Soluciones";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -104,6 +117,7 @@
         private System.Windows.Forms.Button BtnVerificarVencimiento;
         private System.Windows.Forms.Button BtnKeyId;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.Label labelVersion;
     }
 }
 
