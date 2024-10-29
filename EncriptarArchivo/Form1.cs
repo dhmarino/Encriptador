@@ -16,6 +16,7 @@ using Org.BouncyCastle.Pqc.Crypto.Lms;
 using System.Security.Cryptography.X509Certificates;
 using System.Diagnostics;
 using System.Reflection;
+using System.IO.Compression;
 
 namespace EncriptarArchivo
 {
@@ -107,6 +108,47 @@ namespace EncriptarArchivo
                 }
                 throw new ArgumentException("No encryption key found in public key.");
             }
+
+            internal static void EncryptFiles(string[] inputFilePaths, string outputFilePath, string publicKeyPath)
+            {
+                // Mostrar un SaveFileDialog para seleccionar la ubicación y nombre del archivo ZIP
+                using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+                {
+                    saveFileDialog.Filter = "ZIP Files|*.zip";
+                    saveFileDialog.Title = "Guardar archivo comprimido";
+                    saveFileDialog.FileName = "ArchivosComprimidos.zip"; // Nombre predeterminado
+
+                    if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string zipPath = saveFileDialog.FileName;
+                        string[] selectedFiles = inputFilePaths;
+
+                        // Comprimir archivos en el ZIP sin usar CreateEntryFromFile
+                        using (FileStream zipToOpen = new FileStream(zipPath, FileMode.Create))
+                        using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Create))
+                        {
+                            foreach (string file in selectedFiles)
+                            {
+                                // Crear una entrada en el archivo ZIP
+                                ZipArchiveEntry entry = archive.CreateEntry(Path.GetFileName(file));
+
+                                // Copiar el contenido del archivo en la entrada del ZIP
+                                using (FileStream fileToCompress = new FileStream(file, FileMode.Open, FileAccess.Read))
+                                using (Stream entryStream = entry.Open())
+                                {
+                                    fileToCompress.CopyTo(entryStream);
+                                }
+                            }
+                        }
+
+                        //MessageBox.Show("Archivos comprimidos exitosamente en " + zipPath);
+                        PgpEncrypt.EncryptFile(zipPath, zipPath + ".pgp", publicKeyPath);
+                        File.Delete(zipPath);
+                        MessageBox.Show("Se encriptaron todos los archivos juntos en: " + zipPath + ".pgp" + "\nCon la llave pública: " + publicKeyPath);
+                    }
+                }
+            }
+            
         }
 
         //Se probo para llave RSA y ECDSA/EdDSA
@@ -272,51 +314,100 @@ namespace EncriptarArchivo
         }
         private void BtnEncriptar_Click(object sender, EventArgs e)
         {
-            bool inputfile = false;
+            //bool inputfile = false;
+            //bool publicKey = false;
+            //string inputFilePath = "";
+            //string outputFilePath;
+            //string publicKeyPath = "";
+            //string fileName = "";
+            //try
+            //{
+            //    openFileDialog1.Filter = "Archivos de texto (*.txt)|*.txt|Todos los archivos(*.*)|*.*";
+            //    openFileDialog1.Title = "Selecione un archivo para encriptar";
+
+            //    if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            //    {
+            //        inputFilePath = openFileDialog1.FileName;
+            //        fileName = openFileDialog1.SafeFileName;
+            //        inputfile = true;
+            //    }
+            //    if (inputfile)
+            //    {
+            //        openFileDialog1.FileName = "";
+            //        openFileDialog1.Filter = "Llave Publica (*.asc)|*.asc|Todos los archivos(*.*)|*.*";
+            //        openFileDialog1.Title = "Selecione la llave publica con la que quiere encriptar el archivo";
+            //        if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            //        {
+            //            publicKeyPath = openFileDialog1.FileName;
+            //            publicKey = true;
+            //        }
+            //        //inputFilePath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\PGPs_para_API_DHL\\24052024M\\DHL_24052024_222222.txt";
+            //        //outputFilePath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\PGPs_para_API_DHL\\24052024M\\DHL_24052024_222222.pgp";
+            //        outputFilePath = inputFilePath + ".pgp";
+            //        //string publicKeyPath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\GUIAS_DHL_PUBLIC.asc"; //llave publica
+            //        if (publicKey)
+            //        {
+            //            PgpEncrypt.EncryptFile(inputFilePath, outputFilePath, publicKeyPath);
+
+            //            MessageBox.Show("Se encripto el archivo: " + fileName + "\nCon la llave publica: " + openFileDialog1.SafeFileName);
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+
+            //    MessageBox.Show(ex.Message);
+            //}
             bool publicKey = false;
-            string inputFilePath = "";
-            string outputFilePath;
             string publicKeyPath = "";
-            string fileName = "";
             try
             {
                 openFileDialog1.Filter = "Archivos de texto (*.txt)|*.txt|Todos los archivos(*.*)|*.*";
-                openFileDialog1.Title = "Selecione un archivo para encriptar";
+                openFileDialog1.Title = "Seleccione archivos para encriptar";
+                openFileDialog1.Multiselect = true;
 
                 if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 {
-                    inputFilePath = openFileDialog1.FileName;
-                    fileName = openFileDialog1.SafeFileName;
-                    inputfile = true;
-                }
-                if (inputfile)
-                {
+                    string[] inputFilePaths = openFileDialog1.FileNames;
+
                     openFileDialog1.FileName = "";
-                    openFileDialog1.Filter = "Llave Publica (*.asc)|*.asc|Todos los archivos(*.*)|*.*";
-                    openFileDialog1.Title = "Selecione la llave publica con la que quiere encriptar el archivo";
+                    openFileDialog1.Filter = "Llave Pública (*.asc)|*.asc|Todos los archivos(*.*)|*.*";
+                    openFileDialog1.Title = "Seleccione la llave pública con la que quiere encriptar los archivos";
+
                     if (openFileDialog1.ShowDialog() == DialogResult.OK)
                     {
                         publicKeyPath = openFileDialog1.FileName;
                         publicKey = true;
                     }
-                    //inputFilePath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\PGPs_para_API_DHL\\24052024M\\DHL_24052024_222222.txt";
-                    //outputFilePath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\PGPs_para_API_DHL\\24052024M\\DHL_24052024_222222.pgp";
-                    outputFilePath = inputFilePath + ".pgp";
-                    //string publicKeyPath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\GUIAS_DHL_PUBLIC.asc"; //llave publica
+
                     if (publicKey)
                     {
-                        PgpEncrypt.EncryptFile(inputFilePath, outputFilePath, publicKeyPath);
+                        DialogResult result = MessageBox.Show("¿Desea encriptar los archivos individualmente?", "Encriptar Archivos", MessageBoxButtons.YesNoCancel);
 
-                        MessageBox.Show("Se encripto el archivo: " + fileName + "\nCon la llave publica: " + openFileDialog1.SafeFileName);
+                        if (result == DialogResult.Yes)
+                        {
+                            // Encriptar archivos individualmente
+                            foreach (string inputFilePath in inputFilePaths)
+                            {
+                                string outputFilePath = inputFilePath + ".pgp";
+                                PgpEncrypt.EncryptFile(inputFilePath, outputFilePath, publicKeyPath);
+                                MessageBox.Show("Se encriptó el archivo: " + inputFilePath + "\nCon la llave pública: " + openFileDialog1.SafeFileName);
+                            }
+                        }
+                        else if (result == DialogResult.No)
+                        {
+                            // Encriptar todos los archivos juntos
+                            //string outputFilePath = "C:\\Users\\diego.marino\\Desktop\\No gener Guias 241024\\archivo_encriptado.pgp"; // Define una ruta y nombre para el archivo encriptado conjunto
+                            PgpEncrypt.EncryptFiles(inputFilePaths, "outputFilePath", publicKeyPath);
+                            //MessageBox.Show("Se encriptaron todos los archivos juntos en: " + outputFilePath + "\nCon la llave pública: " + openFileDialog1.SafeFileName);
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message);
             }
-            
         }
 
         private void Desencriptar_Click(object sender, EventArgs e)
