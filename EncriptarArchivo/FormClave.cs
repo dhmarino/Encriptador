@@ -23,7 +23,7 @@ namespace EncriptarArchivo
             
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void BtnOk_Click(object sender, EventArgs e)
         {
             ValorIngresado = textBox1.Text;
             this.Close(); // Cierra la ventana actual

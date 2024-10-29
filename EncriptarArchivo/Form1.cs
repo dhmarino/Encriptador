@@ -54,12 +54,19 @@ namespace EncriptarArchivo
                 {
                     PgpCompressedDataGenerator comData = new PgpCompressedDataGenerator(CompressionAlgorithmTag.Zip);
 
-                    PgpUtilities.WriteFileToLiteralData(
-                        comData.Open(bOut),
-                        PgpLiteralData.Binary,
-                        new FileInfo(fileName));
+                    //PgpUtilities.WriteFileToLiteralData(
+                    //    comData.Open(bOut),
+                    //    PgpLiteralData.Binary,
+                    //    new FileInfo(fileName));
 
-                    comData.Close();
+                    //comData.Close();
+                    using (Stream compressedOut = comData.Open(bOut))
+                    {
+                        PgpUtilities.WriteFileToLiteralData(
+                            compressedOut,
+                            PgpLiteralData.Binary,
+                            new FileInfo(fileName));
+                    } // Aquí se cierra el Stream directamente
 
                     PgpEncryptedDataGenerator cPk = new PgpEncryptedDataGenerator(
                         SymmetricKeyAlgorithmTag.Cast5,
@@ -109,7 +116,7 @@ namespace EncriptarArchivo
                 throw new ArgumentException("No encryption key found in public key.");
             }
 
-            internal static void EncryptFiles(string[] inputFilePaths, string outputFilePath, string publicKeyPath)
+            internal static void EncryptFiles(string[] inputFilePaths, string publicKeyPath)
             {
                 // Mostrar un SaveFileDialog para seleccionar la ubicación y nombre del archivo ZIP
                 using (SaveFileDialog saveFileDialog = new SaveFileDialog())
@@ -180,9 +187,9 @@ namespace EncriptarArchivo
                 PgpEncryptedDataList enc;
 
                 PgpObject o = pgpF.NextPgpObject();
-                if (o is PgpEncryptedDataList)
+                if (o is PgpEncryptedDataList list)
                 {
-                    enc = (PgpEncryptedDataList)o;
+                    enc = list;
                 }
                 else
                 {
@@ -193,7 +200,7 @@ namespace EncriptarArchivo
                 PgpPublicKeyEncryptedData pbe = null;
                 PgpSecretKeyRingBundle pgpSec = new PgpSecretKeyRingBundle(PgpUtilities.GetDecoderStream(privateKeyStream));
                 
-                    foreach (PgpPublicKeyEncryptedData pked in enc.GetEncryptedDataObjects())
+                    foreach (PgpPublicKeyEncryptedData pked in enc.GetEncryptedDataObjects().Cast<PgpPublicKeyEncryptedData>())
                     {
                         try
                         {
@@ -398,7 +405,7 @@ namespace EncriptarArchivo
                         {
                             // Encriptar todos los archivos juntos
                             //string outputFilePath = "C:\\Users\\diego.marino\\Desktop\\No gener Guias 241024\\archivo_encriptado.pgp"; // Define una ruta y nombre para el archivo encriptado conjunto
-                            PgpEncrypt.EncryptFiles(inputFilePaths, "outputFilePath", publicKeyPath);
+                            PgpEncrypt.EncryptFiles(inputFilePaths, publicKeyPath);
                             //MessageBox.Show("Se encriptaron todos los archivos juntos en: " + outputFilePath + "\nCon la llave pública: " + openFileDialog1.SafeFileName);
                         }
                     }
@@ -415,7 +422,7 @@ namespace EncriptarArchivo
             string inputFilePath = "C:\\Test\\pgp\\encrypted_output.pgp";
             string outputFilePath;
             string privateKeyPath = "C:\\Test\\pgp\\llave_ECDSA_SECRET.asc";
-            string passphrase = "";
+            string passphrase;
 
             bool inputfile = false;
             bool privateKey = false;
