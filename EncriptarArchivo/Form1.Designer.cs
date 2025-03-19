@@ -35,12 +35,13 @@
             this.BtnKeyId = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.labelVersion = new System.Windows.Forms.Label();
+            this.BtnDesencriptarVerificar = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BtnEncriptar
             // 
             this.BtnEncriptar.Location = new System.Drawing.Point(240, 79);
-            this.BtnEncriptar.Margin = new System.Windows.Forms.Padding(4);
+            this.BtnEncriptar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.BtnEncriptar.Name = "BtnEncriptar";
             this.BtnEncriptar.Size = new System.Drawing.Size(292, 90);
             this.BtnEncriptar.TabIndex = 0;
@@ -50,8 +51,8 @@
             // 
             // BtnDesencriptar
             // 
-            this.BtnDesencriptar.Location = new System.Drawing.Point(240, 233);
-            this.BtnDesencriptar.Margin = new System.Windows.Forms.Padding(4);
+            this.BtnDesencriptar.Location = new System.Drawing.Point(240, 196);
+            this.BtnDesencriptar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.BtnDesencriptar.Name = "BtnDesencriptar";
             this.BtnDesencriptar.Size = new System.Drawing.Size(292, 90);
             this.BtnDesencriptar.TabIndex = 1;
@@ -61,8 +62,8 @@
             // 
             // BtnVerificarVencimiento
             // 
-            this.BtnVerificarVencimiento.Location = new System.Drawing.Point(240, 385);
-            this.BtnVerificarVencimiento.Margin = new System.Windows.Forms.Padding(4);
+            this.BtnVerificarVencimiento.Location = new System.Drawing.Point(240, 427);
+            this.BtnVerificarVencimiento.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.BtnVerificarVencimiento.Name = "BtnVerificarVencimiento";
             this.BtnVerificarVencimiento.Size = new System.Drawing.Size(292, 90);
             this.BtnVerificarVencimiento.TabIndex = 2;
@@ -73,7 +74,7 @@
             // BtnKeyId
             // 
             this.BtnKeyId.Location = new System.Drawing.Point(240, 540);
-            this.BtnKeyId.Margin = new System.Windows.Forms.Padding(4);
+            this.BtnKeyId.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.BtnKeyId.Name = "BtnKeyId";
             this.BtnKeyId.Size = new System.Drawing.Size(292, 90);
             this.BtnKeyId.TabIndex = 3;
@@ -85,25 +86,39 @@
             // 
             this.labelVersion.AutoSize = true;
             this.labelVersion.Font = new System.Drawing.Font("Modern No. 20", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelVersion.Location = new System.Drawing.Point(591, 670);
+            this.labelVersion.Location = new System.Drawing.Point(592, 669);
+            this.labelVersion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(178, 29);
             this.labelVersion.TabIndex = 4;
             this.labelVersion.Text = "Versión: 1.0.0.0";
+            // 
+            // BtnDesencriptarVerificar
+            // 
+            this.BtnDesencriptarVerificar.Location = new System.Drawing.Point(240, 310);
+            this.BtnDesencriptarVerificar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BtnDesencriptarVerificar.Name = "BtnDesencriptarVerificar";
+            this.BtnDesencriptarVerificar.Size = new System.Drawing.Size(292, 90);
+            this.BtnDesencriptarVerificar.TabIndex = 5;
+            this.BtnDesencriptarVerificar.Text = "Desencriptar y Verificar";
+            this.BtnDesencriptarVerificar.UseVisualStyleBackColor = true;
+            this.BtnDesencriptarVerificar.Click += new System.EventHandler(this.BtnDesencriptarVerificar_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 719);
+            this.Controls.Add(this.BtnDesencriptarVerificar);
             this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.BtnKeyId);
             this.Controls.Add(this.BtnVerificarVencimiento);
             this.Controls.Add(this.BtnDesencriptar);
             this.Controls.Add(this.BtnEncriptar);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PGP Soluciones";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -118,6 +133,7 @@
         private System.Windows.Forms.Button BtnKeyId;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Label labelVersion;
+        private System.Windows.Forms.Button BtnDesencriptarVerificar;
     }
 }
 
