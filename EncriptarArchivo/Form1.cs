@@ -2,22 +2,14 @@
 using Org.BouncyCastle.Bcpg;
 using Org.BouncyCastle.Security;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Org.BouncyCastle.Utilities.IO;
-using Org.BouncyCastle.Pqc.Crypto.Lms;
-using System.Security.Cryptography.X509Certificates;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO.Compression;
-using Org.BouncyCastle.Asn1.Cms;
 
 namespace EncriptarArchivo
 {
@@ -55,12 +47,6 @@ namespace EncriptarArchivo
                 {
                     PgpCompressedDataGenerator comData = new PgpCompressedDataGenerator(CompressionAlgorithmTag.Zip);
 
-                    //PgpUtilities.WriteFileToLiteralData(
-                    //    comData.Open(bOut),
-                    //    PgpLiteralData.Binary,
-                    //    new FileInfo(fileName));
-
-                    //comData.Close();
                     using (Stream compressedOut = comData.Open(bOut))
                     {
                         PgpUtilities.WriteFileToLiteralData(
@@ -400,10 +386,6 @@ namespace EncriptarArchivo
 
                 return error;
             }
-
-
-            
-
             private static PgpPrivateKey FindSecretKey(PgpSecretKeyRingBundle pgpSec, long keyId, char[] pass)
             {
                 PgpSecretKey pgpSecKey = pgpSec.GetSecretKey(keyId);
@@ -467,50 +449,6 @@ namespace EncriptarArchivo
         }
         private void BtnEncriptar_Click(object sender, EventArgs e)
         {
-            //bool inputfile = false;
-            //bool publicKey = false;
-            //string inputFilePath = "";
-            //string outputFilePath;
-            //string publicKeyPath = "";
-            //string fileName = "";
-            //try
-            //{
-            //    openFileDialog1.Filter = "Archivos de texto (*.txt)|*.txt|Todos los archivos(*.*)|*.*";
-            //    openFileDialog1.Title = "Selecione un archivo para encriptar";
-
-            //    if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            //    {
-            //        inputFilePath = openFileDialog1.FileName;
-            //        fileName = openFileDialog1.SafeFileName;
-            //        inputfile = true;
-            //    }
-            //    if (inputfile)
-            //    {
-            //        openFileDialog1.FileName = "";
-            //        openFileDialog1.Filter = "Llave Publica (*.asc)|*.asc|Todos los archivos(*.*)|*.*";
-            //        openFileDialog1.Title = "Selecione la llave publica con la que quiere encriptar el archivo";
-            //        if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            //        {
-            //            publicKeyPath = openFileDialog1.FileName;
-            //            publicKey = true;
-            //        }
-            //        //inputFilePath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\PGPs_para_API_DHL\\24052024M\\DHL_24052024_222222.txt";
-            //        //outputFilePath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\PGPs_para_API_DHL\\24052024M\\DHL_24052024_222222.pgp";
-            //        outputFilePath = inputFilePath + ".pgp";
-            //        //string publicKeyPath = "C:\\Desarrollo\\01_Clientes\\AMEX\\AMEX_DHL_API\\GUIAS_DHL_PUBLIC.asc"; //llave publica
-            //        if (publicKey)
-            //        {
-            //            PgpEncrypt.EncryptFile(inputFilePath, outputFilePath, publicKeyPath);
-
-            //            MessageBox.Show("Se encripto el archivo: " + fileName + "\nCon la llave publica: " + openFileDialog1.SafeFileName);
-            //        }
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-
-            //    MessageBox.Show(ex.Message);
-            //}
             bool publicKey = false;
             string publicKeyPath = "";
             try
@@ -550,9 +488,7 @@ namespace EncriptarArchivo
                         else if (result == DialogResult.No)
                         {
                             // Encriptar todos los archivos juntos
-                            //string outputFilePath = "C:\\Users\\diego.marino\\Desktop\\No gener Guias 241024\\archivo_encriptado.pgp"; // Define una ruta y nombre para el archivo encriptado conjunto
                             PgpEncrypt.EncryptFiles(inputFilePaths, publicKeyPath);
-                            //MessageBox.Show("Se encriptaron todos los archivos juntos en: " + outputFilePath + "\nCon la llave pública: " + openFileDialog1.SafeFileName);
                         }
                     }
                 }
@@ -673,7 +609,6 @@ namespace EncriptarArchivo
                 MessageBox.Show(ex.Message);
             }
         }
-
         private void BtnDesencriptarVerificar_Click(object sender, EventArgs e)
         {
             string inputFilePath = @"C:\Desarrollo\01_Clientes\AMEX\TestJcop5\GIPVLDART.H.DLY.20241106.053402.pgp";
@@ -685,7 +620,7 @@ namespace EncriptarArchivo
             bool inputfile = false;
             bool privateKey = false;
             bool publicKey = false;
-            string fileName = "";
+            string fileName;
 
             try
             {
@@ -834,7 +769,6 @@ namespace EncriptarArchivo
             }
             return Verify;
         }
-
         private bool VerifySignature(Stream publicKeyStream, PgpOnePassSignatureList onePassSignatures, PgpObjectFactory plainFact)
         {
             PgpPublicKeyRingBundle pgpPubBundle = new PgpPublicKeyRingBundle(PgpUtilities.GetDecoderStream(publicKeyStream));
@@ -861,12 +795,10 @@ namespace EncriptarArchivo
                 throw new Exception("No se pudo verificar la firma.");
             }
         }
-
         private PgpPrivateKey FindSecretKey(PgpSecretKeyRingBundle pgpSec, long keyId, char[] passPhrase)
         {
             PgpSecretKey secretKey = pgpSec.GetSecretKey(keyId);
             return secretKey?.ExtractPrivateKey(passPhrase);
         }
-        
     }
 }
