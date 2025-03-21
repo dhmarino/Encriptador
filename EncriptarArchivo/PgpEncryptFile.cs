@@ -15,6 +15,14 @@ namespace EncriptarArchivo
     public static class PgpEncryptFile
     {
         //Se probo para llave ECDSA/EdDSA y RSA
+        public static void EncryptFile(string inputFilePath, string outputFilePath, string publicKeyPath)
+        {
+            using (Stream publicKeyStream = File.OpenRead(publicKeyPath))
+            using (Stream outputFileStream = File.Create(outputFilePath))
+            {
+                PgpEncryptFile.EncryptFile(outputFileStream, inputFilePath, publicKeyStream, true, true);
+            }
+        }
         public static void EncryptFile(
                 Stream outputStream,
                 string fileName,

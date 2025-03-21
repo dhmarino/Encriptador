@@ -56,12 +56,12 @@ namespace EncriptarArchivo
                             foreach (string inputFilePath in inputFilePaths)
                             {
                                 string outputFilePath = inputFilePath + ".pgp";
-                                //PgpEncrypt.EncryptFile(inputFilePath, outputFilePath, publicKeyPath);
-                                using (Stream publicKeyStream = File.OpenRead(publicKeyPath))
-                                using (Stream outputFileStream = File.Create(outputFilePath))
-                                {
-                                   PgpEncryptFile.EncryptFile(outputFileStream, inputFilePath, publicKeyStream, true, true);
-                                }
+                                PgpEncryptFile.EncryptFile(inputFilePath, outputFilePath, publicKeyPath);
+                                //using (Stream publicKeyStream = File.OpenRead(publicKeyPath))
+                                //using (Stream outputFileStream = File.Create(outputFilePath))
+                                //{
+                                //   PgpEncryptFile.EncryptFile(outputFileStream, inputFilePath, publicKeyStream, true, true);
+                                //}
                                 MessageBox.Show("Se encriptó el archivo: " + inputFilePath + "\nCon la llave pública: " + openFileDialog1.SafeFileName);
                             }
                         }
