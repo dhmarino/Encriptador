@@ -37,18 +37,18 @@
             // textBox1
             // 
             this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(70, 98);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox1.Location = new System.Drawing.Point(140, 188);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(248, 23);
+            this.textBox1.Size = new System.Drawing.Size(492, 38);
             this.textBox1.TabIndex = 0;
             // 
             // BtnOk
             // 
-            this.BtnOk.Location = new System.Drawing.Point(136, 139);
-            this.BtnOk.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.BtnOk.Location = new System.Drawing.Point(272, 267);
+            this.BtnOk.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.BtnOk.Name = "BtnOk";
-            this.BtnOk.Size = new System.Drawing.Size(96, 35);
+            this.BtnOk.Size = new System.Drawing.Size(192, 67);
             this.BtnOk.TabIndex = 1;
             this.BtnOk.Text = "OK";
             this.BtnOk.UseVisualStyleBackColor = true;
@@ -57,24 +57,25 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(68, 75);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Location = new System.Drawing.Point(136, 144);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(161, 13);
+            this.label1.Size = new System.Drawing.Size(327, 25);
             this.label1.TabIndex = 2;
             this.label1.Text = "Ingrese la Contraseña de la llave";
             // 
             // FormClave
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(387, 223);
+            this.ClientSize = new System.Drawing.Size(774, 429);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.BtnOk);
             this.Controls.Add(this.textBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "FormClave";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PGP";
             this.Load += new System.EventHandler(this.FormClave_Load);
             this.ResumeLayout(false);

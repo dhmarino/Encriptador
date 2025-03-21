@@ -50,6 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PgpDecryptAndVerify.cs" />
+    <Compile Include="PgpEncryptFile.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -62,6 +64,8 @@
     <Compile Include="FormClave.Designer.cs">
       <DependentUpon>FormClave.cs</DependentUpon>
     </Compile>
+    <Compile Include="PgpDecrypt.cs" />
+    <Compile Include="PgpKeyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
